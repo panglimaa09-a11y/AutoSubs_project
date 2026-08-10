@@ -4,6 +4,8 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>AutoSubs Pro — Premium YouTube & Monetization Platform</title>
+  <!-- Supabase CDN -->
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
   <style>
     :root {
       --bg-primary: #030712;
@@ -74,15 +76,15 @@
 <section id="landing" class="page active">
   <nav style="max-width: 1200px; width: 100%; margin: 0 auto; padding: 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border-color);">
     <div style="font-weight: 900; font-size: 22px; display: flex; align-items: center; gap: 10px;">
-      <span style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 6px 12px; border-radius: 10px; box-shadow: 0 4px 12px rgba(239,68,68,0.4);">▶</span> AutoSubs <span style="font-size: 11px; background: rgba(245,158,11,0.2); color: var(--accent-gold); padding: 2px 8px; border-radius: 6px;">PRO RELEASE</span>
+      <span style="background: linear-gradient(135deg, #ef4444, #dc2626); color: white; padding: 6px 12px; border-radius: 10px; box-shadow: 0 4px 12px rgba(239,68,68,0.4);">▶</span> AutoSubs <span style="font-size: 11px; background: rgba(245,158,11,0.2); color: var(--accent-gold); padding: 2px 8px; border-radius: 6px;">PRO SUPABASE</span>
     </div>
     <button onclick="showPage('auth')" class="btn" style="width: auto; padding: 10px 22px;">Masuk / Daftar</button>
   </nav>
 
   <div style="max-width: 800px; margin: 30px auto 0; padding: 0 20px;">
     <div class="ads-banner">
-      <span>Google Ads / Global Sponsor Platform</span>
-      <div class="ad-content">🚀 Platform Otomasi & Monetisasi YouTube Resmi. Siap Digunakan Publik!</div>
+      <span>Supabase Cloud Integration</span>
+      <div class="ad-content">🚀 Terhubung ke Cloud Database Supabase. Data aman dan sinkron real-time!</div>
     </div>
   </div>
 
@@ -92,7 +94,7 @@
       <p style="color: var(--text-muted); font-size: 15px; margin-bottom: 30px; line-height: 1.6;">Solusi terbaik untuk meningkatkan interaksi channel, putar roda keberuntungan harian, dan pencairan saldo token.</p>
       <button onclick="showPage('auth')" class="btn" style="width: auto; padding: 16px 36px; font-size: 16px;">Mulai Platform Sekarang</button>
     </div>
-    <button onclick="hardResetApp()" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 10px; font-size: 11px; margin-top: 50px; cursor: pointer;">Reset Data Sesi Browser</button>
+    <button onclick="hardResetApp()" style="background: transparent; color: var(--text-muted); border: 1px solid var(--border-color); padding: 8px 16px; border-radius: 10px; font-size: 11px; margin-top: 50px; cursor: pointer;">Reset Sesi Lokal</button>
   </div>
 </section>
 
@@ -152,8 +154,8 @@
 
     <!-- Sponsor Banner Google Ads -->
     <div class="ads-banner">
-      <span>Google Ads / Global Sponsor Platform</span>
-      <div class="ad-content">💎 Platform Monetisasi Terverifikasi — Iklan Aktif Mendukung Operasional Server 24/7.</div>
+      <span>Supabase Cloud Integration</span>
+      <div class="ad-content">💎 Cloud Database Aktif — Penyimpanan Data Pengguna & Transaksi Tersinkronisasi.</div>
     </div>
 
     <!-- TAB DASHBOARD (HOME) -->
@@ -203,7 +205,7 @@
       <div class="card">
         <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">Riwayat Aktivitas</h3>
         <div id="activity-history" style="display: flex; flex-direction: column; gap: 8px; max-height: 160px; overflow-y: auto;">
-          <div class="text-xs">Belum ada aktivitas.</div>
+          <div class="text-xs">Memuat data dari Supabase...</div>
         </div>
       </div>
     </div>
@@ -329,7 +331,7 @@
       <div class="card">
         <h3 style="font-size: 15px; font-weight: bold; margin-bottom: 10px;">Riwayat Topup Anda</h3>
         <div id="user-topup-history" style="display: flex; flex-direction: column; gap: 8px;">
-          <div class="text-xs">Belum ada riwayat.</div>
+          <div class="text-xs">Memuat riwayat...</div>
         </div>
       </div>
     </div>
@@ -390,41 +392,26 @@
 </div>
 
 <script>
+  // ==========================================
+  // KONFIGURASI SUPABASE (Ganti dengan kunci Anda)
+  // ==========================================
+  const SUPABASE_URL = 'https://juxjokzzvxohsglhmpus.supabase.co';
+  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';sb_publishable_Z01yQX7MeefShdd3ECUwFA_lKbINx87
+  
+  const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
   let isLoginMode = true;
   let currentUser = localStorage.getItem('currentUser');
   if (currentUser === "null") currentUser = null;
+  let userDataCache = null;
 
   function hardResetApp() {
-    if(confirm("Reset seluruh data browser untuk mengembalikan sistem ke kondisi awal?")) {
+    if(confirm("Reset sesi lokal browser?")) {
       localStorage.clear();
-      alert("Sesi direset. Halaman dimuat ulang.");
+      alert("Sesi direset.");
       window.location.reload();
     }
   }
-
-  function getDB(key) {
-    try { return JSON.parse(localStorage.getItem(key)) || null; } catch(e) { return null; }
-  }
-  function getSafeArray(key) {
-    let data = getDB(key);
-    return Array.isArray(data) ? data : [];
-  }
-  function saveDB(key, data) {
-    try { localStorage.setItem(key, JSON.stringify(data)); } catch(e){}
-  }
-
-  function initDB() {
-    if(!getDB('db_users') || typeof getDB('db_users') !== 'object') saveDB('db_users', {});
-    if(!Array.isArray(getDB('db_topups'))) saveDB('db_topups', []);
-    if(!Array.isArray(getDB('db_bot_orders'))) saveDB('db_bot_orders', []);
-    if(!Array.isArray(getDB('db_promos'))) saveDB('db_promos', []);
-    if(!Array.isArray(getDB('db_history'))) saveDB('db_history', []);
-    if(!getDB('db_spin_config')) saveDB('db_spin_config', { min: 5, max: 100 });
-    if(!getDB('db_vouchers') || typeof getDB('db_vouchers') !== 'object') {
-      saveDB('db_vouchers', { 'AUTOSUBS2026': 15 });
-    }
-  }
-  initDB();
 
   function showToast(msg, isError = false) {
     const t = document.getElementById('toast');
@@ -453,11 +440,7 @@
         renderAdminTopups(); 
         renderAdminBotOrders(); 
         renderAdminCoupons(); 
-        let cfg = getDB('db_spin_config');
-        if(cfg) {
-          document.getElementById('admin-spin-min').value = cfg.min;
-          document.getElementById('admin-spin-max').value = cfg.max;
-        }
+        loadSpinConfigAdmin();
       }
       if(tabId === 'promo') { renderPromos(); }
       if(tabId === 'dash') { renderHistory(); checkDailyBonusStatus(); }
@@ -476,21 +459,21 @@
     if(t3) t3.innerHTML = isLoginMode ? 'Belum punya akun? <b style="color: var(--accent-gold);">Daftar Sekarang</b>' : 'Sudah punya akun? <b style="color: var(--accent-gold);">Masuk</b>';
   }
 
-  function socialLogin(provider) {
+  async function socialLogin(provider) {
     const dummyEmail = `user_${provider.toLowerCase()}_${Math.floor(Math.random()*1000)}@gmail.com`;
-    const users = getDB('db_users') || {};
     
-    if(!users[dummyEmail]) {
-      users[dummyEmail] = {
-        password: "social_login_secure",
+    const { data: existing } = await sb.from('users').select('*').eq('email', dummyEmail).single();
+    if(!existing) {
+      await sb.from('users').insert([{
+        email: dummyEmail,
+        password: 'social_login_secure',
         saldo: 0,
         tokens: 10,
-        spinTickets: 1,
-        lastSpinTime: 0,
-        lastBonusTime: 0,
+        spin_tickets: 1,
+        last_spin_time: 0,
+        last_bonus_time: 0,
         role: 'user'
-      };
-      saveDB('db_users', users);
+      }]);
     }
     
     currentUser = dummyEmail;
@@ -499,7 +482,7 @@
     setTimeout(() => { loadApp(); }, 300);
   }
 
-  function handleAuth(e) {
+  async function handleAuth(e) {
     e.preventDefault();
     const emailInput = document.getElementById('auth-email');
     const passInput = document.getElementById('auth-password');
@@ -507,24 +490,29 @@
 
     const email = emailInput.value.trim().toLowerCase();
     const pass = passInput.value;
-    const users = getDB('db_users') || {};
 
     if(!isLoginMode) {
-      if(users[email]) return showToast('Email sudah terdaftar! Silakan masuk.', true);
-      users[email] = {
+      const { data: existing } = await sb.from('users').select('*').eq('email', email).single();
+      if(existing) return showToast('Email sudah terdaftar! Silakan masuk.', true);
+
+      const { error } = await sb.from('users').insert([{
+        email: email,
         password: pass,
         saldo: 0,
         tokens: (email === "panglimaa09@gmail.com") ? 9999 : 5,
-        spinTickets: 1,
-        lastSpinTime: 0,
-        lastBonusTime: 0,
+        spin_tickets: 1,
+        last_spin_time: 0,
+        last_bonus_time: 0,
         role: (email === "panglimaa09@gmail.com") ? 'admin' : 'user'
-      };
-      saveDB('db_users', users);
+      }]);
+
+      if(error) return showToast('Gagal mendaftar: ' + error.message, true);
       showToast('Pendaftaran sukses! Silakan masuk.');
       toggleAuthMode();
     } else {
-      if(!users[email] || users[email].password !== pass) return showToast('Email atau password salah!', true);
+      const { data: user, error } = await sb.from('users').select('*').eq('email', email).single();
+      if(!user || user.password !== pass) return showToast('Email atau password salah!', true);
+      
       currentUser = email;
       localStorage.setItem('currentUser', currentUser);
       showToast('Autentikasi berhasil!');
@@ -532,36 +520,24 @@
     }
   }
 
-  function setText(id, text) {
-    const el = document.getElementById(id);
-    if(el) el.innerText = text;
-  }
-
-  function loadApp() {
+  async function loadApp() {
     try {
-      const users = getDB('db_users') || {};
-      if(!currentUser || !users[currentUser]) {
-        logout();
-        return;
-      }
+      if(!currentUser) { logout(); return; }
 
-      const userData = users[currentUser];
-      userData.saldo = parseFloat(userData.saldo) || 0;
-      userData.tokens = parseInt(userData.tokens) || 0;
-      userData.spinTickets = parseInt(userData.spinTickets) || 0;
-      userData.lastSpinTime = parseInt(userData.lastSpinTime) || 0;
-      userData.lastBonusTime = parseInt(userData.lastBonusTime) || 0;
-      saveDB('db_users', users);
+      const { data: user, error } = await sb.from('users').select('*').eq('email', currentUser).single();
+      if(error || !user) { logout(); return; }
 
-      setText('profile-email-txt', currentUser);
-      setText('greeting', 'Halo, ' + currentUser.split('@')[0] + '!');
-      setText('ui-tokens', userData.role === 'admin' ? '∞' : userData.tokens);
-      setText('ui-saldo', 'Rp ' + userData.saldo.toLocaleString());
-      setText('profile-spin-tickets', userData.spinTickets + ' Tiket');
+      userDataCache = user;
+
+      document.getElementById('profile-email-txt').innerText = currentUser;
+      document.getElementById('greeting').innerText = 'Halo, ' + currentUser.split('@')[0] + ' !';
+      document.getElementById('ui-tokens').innerText = user.role === 'admin' ? '∞' : user.tokens;
+      document.getElementById('ui-saldo').innerText = 'Rp ' + (user.saldo || 0).toLocaleString();
+      document.getElementById('profile-spin-tickets').innerText = user.spin_tickets + ' Tiket';
 
       const adminMenu = document.getElementById('menu-admin');
       if(adminMenu) {
-        if(userData.role === 'admin') adminMenu.classList.remove('hidden');
+        if(user.role === 'admin') adminMenu.classList.remove('hidden');
         else adminMenu.classList.add('hidden');
       }
       
@@ -577,14 +553,11 @@
     }
   }
 
-  function checkDailyBonusStatus() {
-    const users = getDB('db_users');
-    const user = users[currentUser];
-    if(!user) return;
-
+  async function checkDailyBonusStatus() {
+    if(!userDataCache) return;
     const now = Date.now();
     const cooldown = 24 * 60 * 60 * 1000;
-    const timeDiff = now - (user.lastBonusTime || 0);
+    const timeDiff = now - (userDataCache.last_bonus_time || 0);
     const btn = document.getElementById('btn-claim-bonus');
     const timerTxt = document.getElementById('bonus-timer-txt');
 
@@ -608,46 +581,40 @@
     }
   }
 
-  function claimBonus() {
-    const users = getDB('db_users');
-    const user = users[currentUser];
-    if(!user) return;
-
-    if(user.role !== 'admin') {
-      const now = Date.now();
-      const cooldown = 24 * 60 * 60 * 1000;
-      if (now - (user.lastBonusTime || 0) < cooldown) {
-        return showToast('Bonus harian sudah diklaim! Silakan coba lagi setelah 24 jam.', true);
-      }
-      user.lastBonusTime = now;
+  async function claimBonus() {
+    if(!userDataCache) return;
+    const now = Date.now();
+    const cooldown = 24 * 60 * 60 * 1000;
+    
+    if(userDataCache.role !== 'admin' && now - (userDataCache.last_bonus_time || 0) < cooldown) {
+      return showToast('Bonus harian sudah diklaim!', true);
     }
 
-    user.tokens += 2;
-    saveDB('db_users', users);
+    const newTokens = userDataCache.tokens + 2;
+    await sb.from('users').update({ tokens: newTokens, last_bonus_time: now }).eq('email', currentUser);
+    
     addHistory('Klaim +2 Token Harian.');
     loadApp();
     showToast('Sukses klaim 2 Token harian!');
   }
 
-  function checkSpinStatus() {
-    const users = getDB('db_users');
-    const user = users[currentUser];
-    if(!user) return;
-
+  async function checkSpinStatus() {
+    if(!userDataCache) return;
     const now = Date.now();
     const cooldown = 24 * 60 * 60 * 1000;
-    const timeDiff = now - (user.lastSpinTime || 0);
+    const timeDiff = now - (userDataCache.last_spin_time || 0);
 
-    if (timeDiff >= cooldown && user.spinTickets === 0) {
-      user.spinTickets = 1;
-      saveDB('db_users', users);
+    let tickets = userDataCache.spin_tickets;
+    if (timeDiff >= cooldown && tickets === 0) {
+      tickets = 1;
+      await sb.from('users').update({ spin_tickets: 1 }).eq('email', currentUser);
     }
 
-    setText('spin-ticket-count', user.spinTickets);
+    document.getElementById('spin-ticket-count').innerText = tickets;
     const timerTxt = document.getElementById('spin-timer-txt');
     
     if (timerTxt) {
-      if (user.spinTickets > 0) {
+      if (tickets > 0) {
         timerTxt.innerText = "🎉 Tiket putaran gratis siap digunakan!";
         timerTxt.style.color = "var(--accent-emerald)";
       } else {
@@ -655,29 +622,25 @@
         if (remainingTime < 0) remainingTime = 0;
         const hours = Math.floor(remainingTime / (1000 * 60 * 60));
         const minutes = Math.floor((remainingTime % (1000 * 60 * 60)) / (1000 * 60));
-        timerTxt.innerText = `⏳ Tersedia dalam ${hours}j ${minutes}m (Top-up untuk tiket instan)`;
+        timerTxt.innerText = `⏳ Tersedia dalam ${hours}j ${minutes}m`;
         timerTxt.style.color = "var(--accent-gold)";
       }
     }
   }
 
-  function spinWheel() {
-    const users = getDB('db_users');
-    const user = users[currentUser];
-    if(!user) return;
-
-    if (user.spinTickets <= 0) {
-      return showToast('Tiket spin habis! Silakan tunggu atau lakukan top-up.', true);
+  async function spinWheel() {
+    if(!userDataCache || userDataCache.spin_tickets <= 0) {
+      return showToast('Tiket spin habis!', true);
     }
 
-    user.spinTickets -= 1;
-    user.lastSpinTime = Date.now();
+    const { data: cfgList } = await sb.from('spin_config').select('*').limit(1);
+    const cfg = cfgList && cfgList.length > 0 ? cfgList[0] : { min: 5, max: 100 };
+    const prize = Math.floor(Math.random() * (cfg.max - cfg.min + 1)) + cfg.min;
 
-    const spinConfig = getDB('db_spin_config') || { min: 5, max: 100 };
-    const prize = Math.floor(Math.random() * (spinConfig.max - spinConfig.min + 1)) + spinConfig.min;
-    
-    user.tokens += prize;
-    saveDB('db_users', users);
+    const newTickets = userDataCache.spin_tickets - 1;
+    const newTokens = userDataCache.tokens + prize;
+
+    await sb.from('users').update({ spin_tickets: newTickets, tokens: newTokens, last_spin_time: Date.now() }).eq('email', currentUser);
 
     const wheelDisplay = document.getElementById('wheel-display');
     if(wheelDisplay) {
@@ -685,97 +648,84 @@
       setTimeout(() => {
         wheelDisplay.style.transform = 'rotate(0deg)';
         loadApp();
-        showToast(`🎉 JACKPOT! Anda memenangkan ${prize} Token!`);
+        showToast(`🎉 JACKPOT! Memenangkan ${prize} Token!`);
         addHistory(`Memenangkan ${prize} Token dari Roda Undian.`);
       }, 600);
-    } else {
-      loadApp();
-      showToast(`🎉 JACKPOT! Anda memenangkan ${prize} Token!`);
     }
   }
 
-  function saveAdminSpinConfig() {
+  async function loadSpinConfigAdmin() {
+    const { data } = await sb.from('spin_config').select('*').limit(1);
+    if(data && data.length > 0) {
+      document.getElementById('admin-spin-min').value = data[0].min;
+      document.getElementById('admin-spin-max').value = data[0].max;
+    }
+  }
+
+  async function saveAdminSpinConfig() {
     const min = parseInt(document.getElementById('admin-spin-min').value);
     const max = parseInt(document.getElementById('admin-spin-max').value);
-    if(isNaN(min) || isNaN(max) || min >= max) {
-      return showToast('Konfigurasi tidak valid! Min harus lebih kecil dari Max.', true);
-    }
-    saveDB('db_spin_config', { min, max });
-    showToast('Konfigurasi Lucky Spin berhasil diperbarui!');
+    if(isNaN(min) || isNaN(max) || min >= max) return showToast('Konfigurasi tidak valid!', true);
+
+    await sb.from('spin_config').delete().neq('min', -1);
+    await sb.from('spin_config').insert([{ min, max }]);
+    showToast('Konfigurasi Spin diperbarui!');
   }
 
-  function redeemTokensToSaldo() {
+  async function redeemTokensToSaldo() {
     const inputEl = document.getElementById('input-redeem-tokens');
-    if(!inputEl) return;
     const inputToken = parseInt(inputEl.value);
     
-    if(isNaN(inputToken) || inputToken < 2500) {
-      return showToast('Minimal penukaran adalah 2.500 Token!', true);
-    }
-
-    const users = getDB('db_users');
-    const user = users[currentUser];
-
-    if(user.tokens < inputToken) {
-      return showToast('Saldo token tidak mencukupi!', true);
-    }
+    if(isNaN(inputToken) || inputToken < 2500) return showToast('Minimal penukaran adalah 2.500 Token!', true);
+    if(userDataCache.tokens < inputToken) return showToast('Saldo token tidak cukup!', true);
 
     const grossRupiah = (inputToken / 100) * 1000;
-    const tax = grossRupiah * 0.10;
-    const netRupiah = grossRupiah - tax;
+    const netRupiah = grossRupiah - (grossRupiah * 0.10);
 
-    user.tokens -= inputToken;
-    user.saldo += netRupiah;
-    saveDB('db_users', users);
+    const newTokens = userDataCache.tokens - inputToken;
+    const newSaldo = userDataCache.saldo + netRupiah;
 
+    await sb.from('users').update({ tokens: newTokens, saldo: newSaldo }).eq('email', currentUser);
     inputEl.value = '';
     loadApp();
-    showToast(`Sukses menukar ${inputToken} Token jadi Rp ${netRupiah.toLocaleString()} (Potongan Pajak 10%)`);
+    showToast(`Sukses menukar ${inputToken} Token jadi Rp ${netRupiah.toLocaleString()}`);
     addHistory(`Penukaran ${inputToken} Token ke Saldo Rp ${netRupiah.toLocaleString()}.`);
   }
 
-  function addHistory(text) {
-    const history = getSafeArray('db_history');
-    history.unshift({ email: currentUser, text: text, time: new Date().toLocaleTimeString() });
-    if(history.length > 25) history.pop();
-    saveDB('db_history', history);
+  async function addHistory(text) {
+    await sb.from('history').insert([{ email: currentUser, text: text, time: new Date().toLocaleTimeString() }]);
   }
 
-  function renderHistory() {
-    const history = getSafeArray('db_history');
+  async function renderHistory() {
     const container = document.getElementById('activity-history');
     if(!container) return;
-    
-    const userHistory = history.filter(h => h.email === currentUser);
-    if(userHistory.length === 0) {
+
+    const { data: history } = await sb.from('history').select('*').eq('email', currentUser).order('id', { ascending: false }).limit(25);
+    if(!history || history.length === 0) {
       container.innerHTML = '<div class="text-xs">Belum ada riwayat aktivitas.</div>';
       return;
     }
     container.innerHTML = '';
-    userHistory.forEach(h => {
+    history.forEach(h => {
       container.innerHTML += `<div class="text-xs" style="background: var(--bg-primary); padding: 8px 12px; border-radius: 10px; border: 1px solid var(--border-color); display: flex; justify-content: space-between;"><span>${h.text}</span><span style="color: var(--text-muted);">${h.time}</span></div>`;
     });
   }
 
-  function chargeToken(amount = 1) {
-    const users = getDB('db_users');
-    const user = users[currentUser];
-    if(user.role === 'admin') return true; 
-
-    if (user.tokens >= amount) {
-      user.tokens -= amount;
+  async function chargeToken(amount = 1) {
+    if(userDataCache.role === 'admin') return true;
+    if(userDataCache.tokens >= amount) {
+      const newTokens = userDataCache.tokens - amount;
+      await sb.from('users').update({ tokens: newTokens }).eq('email', currentUser);
+      loadApp();
+      return true;
     } else {
       showToast(`Token tidak cukup! Butuh ${amount} Token.`, true);
       return false;
     }
-    saveDB('db_users', users);
-    loadApp(); 
-    return true;
   }
 
   function generateSubLink() {
     const urlInput = document.getElementById('input-yt-url');
-    if(!urlInput) return;
     const url = urlInput.value.trim();
     if(!url) return showToast('Masukkan URL valid!', true);
     
@@ -789,37 +739,38 @@
     showToast('Tautan berhasil dibuat!');
   }
 
-  function requestBot() {
+  async function requestBot() {
     const urlInput = document.getElementById('bot-url');
     const typeInput = document.getElementById('bot-type');
-    if(!urlInput || !typeInput) return;
-    
     const url = urlInput.value.trim();
     const type = typeInput.value;
+    
     if(!url) return showToast('Masukkan URL target!', true);
-    if(!chargeToken()) return;
+    if(!await chargeToken(1)) return;
 
-    const orders = getSafeArray('db_bot_orders');
-    orders.push({ id: Date.now(), email: currentUser, url: url, type: type, status: 'pending' });
-    saveDB('db_bot_orders', orders);
+    await sb.from('bot_orders').insert([{ email: currentUser, url: url, type: type, status: 'pending' }]);
     urlInput.value = '';
     addHistory(`Memesan bot: ${type}`);
-    showToast('Pesanan bot berhasil dimasukkan ke antrean server!');
+    showToast('Pesanan bot dimasukkan ke antrean server!');
   }
 
-  function addPromo() {
+  async function addPromo() {
     const titleInput = document.getElementById('promo-title');
     const urlInput = document.getElementById('promo-url');
-    if(!titleInput || !urlInput) return;
-    
     const title = titleInput.value.trim();
     let url = urlInput.value.trim();
+    
     if(!title || !url) return showToast('Lengkapi form promosi!', true);
-    if(!chargeToken(5)) return;
+    if(!await chargeToken(5)) return;
 
-    const promos = getSafeArray('db_promos');
-    promos.unshift({ id: Date.now(), email: currentUser, title: title, url: url.includes('?sub_confirmation=1') ? url : url + '?sub_confirmation=1', clicks: 0, max_clicks: 50 });
-    saveDB('db_promos', promos);
+    await sb.from('promos').insert([{
+      email: currentUser,
+      title: title,
+      url: url.includes('?sub_confirmation=1') ? url : url + '?sub_confirmation=1',
+      clicks: 0,
+      max_clicks: 50
+    }]);
+
     titleInput.value = '';
     urlInput.value = '';
     addHistory('Memasang promosi komunitas.');
@@ -827,20 +778,21 @@
     renderPromos();
   }
 
-  function renderPromos() {
-    const promos = getSafeArray('db_promos');
+  async function renderPromos() {
     const board = document.getElementById('promo-board');
     if(!board) return;
-    
+
+    const { data: promos } = await sb.from('promos').select('*').order('id', { ascending: false });
     board.innerHTML = '';
-    const activePromos = promos.filter(p => p.clicks < p.max_clicks);
+    
+    const activePromos = (promos || []).filter(p => p.clicks < p.max_clicks);
     if(activePromos.length === 0) {
       board.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); font-style: italic; text-align: center;">Belum ada promosi aktif.</div>';
       return;
     }
     activePromos.forEach(p => {
       board.innerHTML += `
-        <div style="background: var(--bg-primary); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="clickPromo(${p.id}, '${p.url}')">
+        <div style="background: var(--bg-primary); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; justify-content: space-between; align-items: center; cursor: pointer;" onclick="clickPromo(${p.id}, '${p.url}', ${p.clicks})">
           <div style="overflow: hidden; flex: 1;">
             <div style="font-size: 13px; font-weight: bold; color: white; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${p.title}</div>
             <div style="font-size: 10px; color: var(--text-muted); margin-top: 2px;">Klik: ${p.clicks}/${p.max_clicks}</div>
@@ -851,31 +803,23 @@
     });
   }
 
-  function clickPromo(id, url) {
-    const promos = getSafeArray('db_promos');
-    const index = promos.findIndex(p => p.id === id);
-    if(index !== -1) {
-      promos[index].clicks += 1;
-      saveDB('db_promos', promos);
-      renderPromos();
-    }
+  async function clickPromo(id, url, currentClicks) {
+    await sb.from('promos').update({ clicks: currentClicks + 1 }).eq('id', id);
+    renderPromos();
     window.open(url, '_blank');
   }
 
-  function claimVoucher() {
+  async function claimVoucher() {
     const vInput = document.getElementById('voucher-code');
-    if(!vInput) return;
     const code = vInput.value.trim().toUpperCase();
-    const vouchers = getDB('db_vouchers') || {};
     
-    if(vouchers[code]) {
-      const reward = vouchers[code];
-      const users = getDB('db_users');
-      users[currentUser].tokens += reward;
-      saveDB('db_users', users);
+    const { data: vList } = await sb.from('vouchers').select('*').eq('code', code).single();
+    if(vList) {
+      const reward = vList.token;
+      const newTokens = userDataCache.tokens + reward;
       
-      delete vouchers[code];
-      saveDB('db_vouchers', vouchers);
+      await sb.from('users').update({ tokens: newTokens }).eq('email', currentUser);
+      await sb.from('vouchers').delete().eq('code', code);
 
       addHistory(`Klaim Kupon ${code} (+${reward} Token).`);
       loadApp();
@@ -886,42 +830,36 @@
     }
   }
 
-  function createCoupon() {
+  async function createCoupon() {
     const codeInput = document.getElementById('admin-coupon-code');
     const tokenInput = document.getElementById('admin-coupon-token');
-    if(!codeInput || !tokenInput) return;
-    
     const code = codeInput.value.trim().toUpperCase();
     const tokenVal = parseInt(tokenInput.value);
+    
     if(!code || isNaN(tokenVal) || tokenVal <= 0) return showToast('Masukkan data kupon valid!', true);
 
-    const vouchers = getDB('db_vouchers') || {};
-    vouchers[code] = tokenVal;
-    saveDB('db_vouchers', vouchers);
-
+    await sb.from('vouchers').insert([{ code: code, token: tokenVal }]);
     codeInput.value = '';
     tokenInput.value = '';
     showToast(`Kupon ${code} berhasil diterbitkan!`);
     renderAdminCoupons();
   }
 
-  function renderAdminCoupons() {
-    const vouchers = getDB('db_vouchers') || {};
+  async function renderAdminCoupons() {
     const listDiv = document.getElementById('admin-coupon-list');
     if(!listDiv) return;
+
+    const { data: vouchers } = await sb.from('vouchers').select('*');
+    if(!vouchers || vouchers.length === { length: 0 }.length) { listDiv.innerHTML = '<div class="text-xs">Tidak ada kupon aktif.</div>'; return; }
     
-    const keys = Object.keys(vouchers);
-    if(keys.length === 0) { listDiv.innerHTML = '<div class="text-xs">Tidak ada kupon aktif.</div>'; return; }
     listDiv.innerHTML = '';
-    keys.forEach(k => {
-      listDiv.innerHTML += `<div style="background: var(--bg-primary); padding: 8px 10px; border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;"><span><b>${k}</b> (${vouchers[k]} Token)</span><button onclick="deleteCoupon('${k}')" style="background: var(--accent-red); color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 9px; cursor: pointer;">Hapus</button></div>`;
+    vouchers.forEach(v => {
+      listDiv.innerHTML += `<div style="background: var(--bg-primary); padding: 8px 10px; border-radius: 8px; font-size: 11px; display: flex; justify-content: space-between; align-items: center;"><span><b>${v.code}</b> (${v.token} Token)</span><button onclick="deleteCoupon('${v.code}')" style="background: var(--accent-red); color: white; border: none; padding: 4px 8px; border-radius: 6px; font-size: 9px; cursor: pointer;">Hapus</button></div>`;
     });
   }
 
-  function deleteCoupon(code) {
-    const vouchers = getDB('db_vouchers');
-    delete vouchers[code];
-    saveDB('db_vouchers', vouchers);
+  async function deleteCoupon(code) {
+    await sb.from('vouchers').delete().eq('code', code);
     renderAdminCoupons();
     showToast('Kupon dihapus.');
   }
@@ -932,10 +870,8 @@
     document.querySelectorAll('.topup-pkg').forEach(el => el.style.borderColor = 'var(--border-color)');
     if(event && event.currentTarget) event.currentTarget.style.borderColor = 'var(--accent-gold)';
     
-    const desc = document.getElementById('topup-desc');
-    const form = document.getElementById('topup-form');
-    if(desc) desc.innerText = `Paket Terpilih: ${token} Token (Rp ${price.toLocaleString()}) — Bonus +1 Tiket Spin!`;
-    if(form) form.classList.remove('hidden');
+    document.getElementById('topup-desc').innerText = `Paket Terpilih: ${token} Token (Rp ${price.toLocaleString()}) — Bonus +1 Tiket Spin!`;
+    document.getElementById('topup-form').classList.remove('hidden');
   }
 
   function submitTopup() {
@@ -944,21 +880,17 @@
 
     const file = fileInput.files[0];
     const reader = new FileReader();
-    reader.onload = function(e) {
+    reader.onload = async function(e) {
       const base64Image = e.target.result;
-      const topups = getSafeArray('db_topups');
-      topups.push({ 
-        id: Date.now(), 
-        email: currentUser, 
-        token: selectedPackage.token, 
-        price: selectedPackage.price, 
-        proofImage: base64Image, 
-        status: 'pending' 
-      });
-      saveDB('db_topups', topups);
+      await sb.from('topups').insert([{
+        email: currentUser,
+        token: selectedPackage.token,
+        price: selectedPackage.price,
+        proof_image: base64Image,
+        status: 'pending'
+      }]);
       
-      const form = document.getElementById('topup-form');
-      if(form) form.classList.add('hidden');
+      document.getElementById('topup-form').classList.add('hidden');
       fileInput.value = '';
       addHistory(`Topup Rp ${selectedPackage.price.toLocaleString()}`);
       showToast('Bukti terkirim! Menunggu verifikasi admin.');
@@ -967,18 +899,17 @@
     reader.readAsDataURL(file);
   }
 
-  function renderUserTopupHistory() {
-    const topups = getSafeArray('db_topups');
+  async function renderUserTopupHistory() {
     const container = document.getElementById('user-topup-history');
     if(!container) return;
     
-    const userTopups = topups.filter(t => t.email === currentUser);
-    if(userTopups.length === 0) {
+    const { data: topups } = await sb.from('topups').select('*').eq('email', currentUser).order('id', { ascending: false });
+    if(!topups || topups.length === 0) {
       container.innerHTML = '<div class="text-xs">Belum ada riwayat transaksi.</div>';
       return;
     }
     container.innerHTML = '';
-    userTopups.slice().reverse().forEach(t => {
+    topups.forEach(t => {
       let badgeColor = t.status === 'approved' ? 'var(--accent-emerald)' : 'var(--accent-gold)';
       let statusText = t.status === 'approved' ? 'Disetujui (+Token & +Spin)' : 'Menunggu Verifikasi';
       container.innerHTML += `
@@ -987,30 +918,26 @@
             <b>${t.token} Token</b> (Rp ${t.price.toLocaleString()})<br>
             <span style="color: ${badgeColor}; font-weight: bold; font-size: 10px;">Status: ${statusText}</span>
           </div>
-          <button onclick="viewProof('${t.proofImage}')" style="background: var(--bg-card); color: #60a5fa; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-size: 11px; cursor: pointer;">Lihat Foto</button>
+          <button onclick="viewProof('${t.proof_image}')" style="background: var(--bg-card); color: #60a5fa; border: 1px solid var(--border-color); padding: 6px 12px; border-radius: 8px; font-size: 11px; cursor: pointer;">Lihat Foto</button>
         </div>
       `;
     });
   }
 
   function viewProof(imgBase64) {
-    const img = document.getElementById('proof-img');
-    const modal = document.getElementById('proof-modal');
-    if(img && modal) {
-      img.src = imgBase64;
-      modal.classList.remove('hidden');
-    }
+    document.getElementById('proof-img').src = imgBase64;
+    document.getElementById('proof-modal').classList.remove('hidden');
   }
 
-  function renderAdminBotOrders() {
-    const orders = getSafeArray('db_bot_orders');
+  async function renderAdminBotOrders() {
     const queueDiv = document.getElementById('admin-bot-queue');
     if(!queueDiv) return;
     
-    const pendings = orders.filter(t => t.status === 'pending');
-    if(pendings.length === 0) { queueDiv.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); font-style: italic;">Tidak ada antrean bot.</div>'; return; }
+    const { data: orders } = await sb.from('bot_orders').select('*').eq('status', 'pending');
+    if(!orders || orders.length === 0) { queueDiv.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); font-style: italic;">Tidak ada antrean bot.</div>'; return; }
+    
     queueDiv.innerHTML = '';
-    pendings.forEach(t => {
+    orders.forEach(t => {
       queueDiv.innerHTML += `
         <div style="background: var(--bg-primary); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 6px;">
           <div style="font-size: 12px; color: white;"><b>${t.email}</b> - <span style="color: var(--accent-emerald);">${t.type}</span></div>
@@ -1021,72 +948,60 @@
     });
   }
 
-  function finishBotOrder(id) {
-    const orders = getSafeArray('db_bot_orders');
-    const index = orders.findIndex(t => t.id === id);
-    if(index !== -1) {
-      orders[index].status = 'completed';
-      saveDB('db_bot_orders', orders);
-      showToast('Pesanan bot ditandai selesai!');
-      renderAdminBotOrders();
-    }
+  async function finishBotOrder(id) {
+    await sb.from('bot_orders').update({ status: 'completed' }).eq('id', id);
+    showToast('Pesanan bot ditandai selesai!');
+    renderAdminBotOrders();
   }
 
-  function renderAdminTopups() {
-    const topups = getSafeArray('db_topups');
+  async function renderAdminTopups() {
     const queueDiv = document.getElementById('admin-queue');
     if(!queueDiv) return;
     
-    const pendings = topups.filter(t => t.status === 'pending');
-    if(pendings.length === 0) { queueDiv.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); font-style: italic;">Tidak ada antrean topup.</div>'; return; }
+    const { data: topups } = await sb.from('topups').select('*').eq('status', 'pending');
+    if(!topups || topups.length === 0) { queueDiv.innerHTML = '<div style="font-size: 11px; color: var(--text-muted); font-style: italic;">Tidak ada antrean topup.</div>'; return; }
+    
     queueDiv.innerHTML = '';
-    pendings.forEach(t => {
+    topups.forEach(t => {
       queueDiv.innerHTML += `
         <div style="background: var(--bg-primary); padding: 12px; border-radius: 12px; border: 1px solid var(--border-color); display: flex; flex-direction: column; gap: 8px;">
           <div style="font-size: 12px; color: white;"><b>${t.email}</b> — <span style="color: var(--accent-gold);">${t.token} Token (Rp ${t.price.toLocaleString()})</span></div>
           <div style="display: flex; gap: 8px;">
-            <button onclick="viewProof('${t.proofImage}')" style="background: var(--bg-card); color: #60a5fa; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; flex: 1;">Bukti Foto</button>
-            <button onclick="approveTopup(${t.id})" class="btn btn-gold" style="padding: 8px; font-size: 11px; flex: 1;">Setujui (+Token & +Spin)</button>
+            <button onclick="viewProof('${t.proof_image}')" style="background: var(--bg-card); color: #60a5fa; border: 1px solid var(--border-color); padding: 8px 12px; border-radius: 8px; font-size: 11px; cursor: pointer; flex: 1;">Bukti Foto</button>
+            <button onclick="approveTopup(${t.id}, '${t.email}', ${t.token})" class="btn btn-gold" style="padding: 8px; font-size: 11px; flex: 1;">Setujui (+Token & +Spin)</button>
           </div>
         </div>
       `;
     });
   }
 
-  function approveTopup(orderId) {
-    const topups = getSafeArray('db_topups');
-    const users = getDB('db_users');
-    const orderIndex = topups.findIndex(t => t.id === orderId);
-    if(orderIndex === -1) return;
-    
-    const order = topups[orderIndex];
-    if(users[order.email]) {
-      users[order.email].tokens += order.token;
-      users[order.email].spinTickets += 1;
-      saveDB('db_users', users);
+  async function approveTopup(orderId, targetEmail, tokenAmount) {
+    const { data: targetUser } = await sb.from('users').select('*').eq('email', targetEmail).single();
+    if(targetUser) {
+      await sb.from('users').update({
+        tokens: targetUser.tokens + tokenAmount,
+        spin_tickets: targetUser.spin_tickets + 1
+      }).eq('email', targetEmail);
     }
     
-    topups[orderIndex].status = 'approved';
-    saveDB('db_topups', topups);
-    showToast('Topup disetujui! Token dan bonus tiket spin masuk ke user.');
+    await sb.from('topups').update({ status: 'approved' }).eq('id', orderId);
+    showToast('Topup disetujui!');
     renderAdminTopups();
-    if(currentUser === order.email) loadApp();
+    if(currentUser === targetEmail) loadApp();
   }
 
-  function sendAdminToken() {
+  async function sendAdminToken() {
     const tInput = document.getElementById('admin-target');
     const aInput = document.getElementById('admin-amount');
-    if(!tInput || !aInput) return;
-    
     const target = tInput.value.trim().toLowerCase();
     const amount = parseInt(aInput.value);
+    
     if(!target || isNaN(amount) || amount <= 0) return showToast('Masukkan email & jumlah valid!', true);
     
-    const users = getDB('db_users');
-    if(!users[target]) return showToast('Email user tidak ditemukan!', true);
+    const { data: targetUser } = await sb.from('users').select('*').eq('email', target).single();
+    if(!targetUser) return showToast('Email user tidak ditemukan di database!', true);
     
-    users[target].tokens += amount;
-    saveDB('db_users', users);
+    await sb.from('users').update({ tokens: targetUser.tokens + amount }).eq('email', target);
     tInput.value = '';
     aInput.value = '';
     showToast(`Berhasil mengirim ${amount} Token ke ${target}!`);
@@ -1095,18 +1010,16 @@
   function logout() {
     localStorage.removeItem('currentUser');
     currentUser = null;
+    userDataCache = null;
     showPage('landing');
     showToast('Berhasil keluar sesi.');
   }
 
-  if(currentUser && getDB('db_users') && getDB('db_users')[currentUser]) {
-    setTimeout(() => { loadApp(); }, 100);
+  if(currentUser) {
+    loadApp();
   } else {
-    currentUser = null;
-    localStorage.removeItem('currentUser');
     showPage('landing');
   }
 </script>
 </body>
 </html>
-

@@ -1,0 +1,12 @@
+-- Placeholder migration.
+-- JANGAN menjalankan file ini jika tabel Supabase Anda yang sekarang
+-- sudah dibuat dan sudah benar.
+-- Kita akan menyesuaikan migration dengan struktur project Supabase Anda
+-- setelah daftar tabel terbaru dikirim.
+
+-- Tabel yang diharapkan oleh starter frontend:
+-- profiles
+-- topup_orders
+-- bot_orders
+-- spin_config
+-- promos

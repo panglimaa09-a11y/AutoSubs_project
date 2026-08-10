@@ -1,0 +1,38 @@
+/* Tempat memindahkan CSS AutoSubs dari versi lama. */
+:root {
+  --bg-primary: #030712;
+  --bg-secondary: #0f172a;
+  --bg-card: #1e293b;
+  --accent-gold: #f59e0b;
+  --accent-red: #ef4444;
+  --accent-emerald: #10b981;
+  --text-main: #f8fafc;
+  --text-muted: #94a3b8;
+  --border-color: #334155;
+}
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--bg-primary);
+  color: var(--text-main);
+  font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+}
+.toast {
+  position: fixed;
+  left: 20px;
+  right: 20px;
+  bottom: 25px;
+  max-width: 420px;
+  margin: auto;
+  padding: 14px 20px;
+  border-radius: 14px;
+  background: var(--accent-emerald);
+  color: white;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px);
+  pointer-events: none;
+  transition: .25s ease;
+  z-index: 9999;
+}
+.toast.show { opacity: 1; transform: translateY(0); }

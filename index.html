@@ -84,7 +84,7 @@
   <div style="max-width: 800px; margin: 30px auto 0; padding: 0 20px;">
     <div class="ads-banner">
       <span>Supabase Cloud Integration</span>
-      <div class="ad-content">🚀 Terhubung ke Cloud Database Supabase. Data aman dan sinkron real-time!</div>
+      <div class="ad-content">🚀 Terhubung ke Cloud Database Supabase Anda. Data aman dan sinkron real-time!</div>
     </div>
   </div>
 
@@ -393,10 +393,10 @@
 
 <script>
   // ==========================================
-  // KONFIGURASI SUPABASE (Ganti dengan kunci Anda)
+  // KONFIGURASI SUPABASE (Tersambung)
   // ==========================================
   const SUPABASE_URL = 'https://juxjokzzvxohsglhmpus.supabase.co';
-  const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';sb_publishable_Z01yQX7MeefShdd3ECUwFA_lKbINx87
+  const SUPABASE_ANON_KEY = 'sb_publishable_Z01yQX7MeefShdd3ECUwFA_lKbINx87';
   
   const sb = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
@@ -850,7 +850,7 @@
     if(!listDiv) return;
 
     const { data: vouchers } = await sb.from('vouchers').select('*');
-    if(!vouchers || vouchers.length === { length: 0 }.length) { listDiv.innerHTML = '<div class="text-xs">Tidak ada kupon aktif.</div>'; return; }
+    if(!vouchers || vouchers.length === 0) { listDiv.innerHTML = '<div class="text-xs">Tidak ada kupon aktif.</div>'; return; }
     
     listDiv.innerHTML = '';
     vouchers.forEach(v => {
